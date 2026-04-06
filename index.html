@@ -145,7 +145,7 @@
 	
 		const SUPABASE_URL = 'https://lzobdqlbsxjlupyewdqq.supabase.co';
 		const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6b2JkcWxic3hqbHVweWV3ZHFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5OTY0MDQsImV4cCI6MjA4OTU3MjQwNH0.fH-bV3QiQUbk_6L-clwwdHlZTnTIYAIJeKysMhUlBIs'; 
-		const GAS_URL = 'https://script.google.com/macros/s/AKfycbzeR7L8dfzk7vtMNr6Zv_0VQP3n5-R3oWL79PQ0lT0aux4L6261yKPm8M4Jh9VE2DUm/exec';
+		const GAS_URL = 'https://script.google.com/macros/s/AKfycbzoMjMSKa8CQOfNL7UmsVov1hOzbdY5gtUvtK9HKwXt9Pfe3QUMg_7MOgP5v4FTqng/exec';
 	
 		const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 		let currentUser = null;
@@ -220,11 +220,16 @@
 					try {
 						const response = await fetch(GAS_URL, {
 							method: 'POST',
-							body: JSON.stringify({ image: reader.result, filename: file.name, mimeType: file.type })
+							body: JSON.stringify({ 
+								action: 'uploadImage', // 👈 هذا هو السطر السحري الذي كان مفقوداً
+								image: reader.result, 
+								filename: file.name, 
+								mimeType: file.type 
+							})
 						});
 						const result = await response.json();
 						if (result.success) resolve(result.url);
-						else reject(result.error || 'فشل رفع الصورة لسبب مجهول');
+						else reject(result.error);
 					} catch (err) { reject(err); }
 				};
 				reader.readAsDataURL(file);
