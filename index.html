@@ -142,10 +142,12 @@
 			const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'}); 
 			document.head.insertAdjacentHTML('beforeend', `<link rel="manifest" href="${URL.createObjectURL(blob)}">`);
 		})();
-	
-		const SUPABASE_URL = 'https://lzobdqlbsxjlupyewdqq.supabase.co';
-		const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6b2JkcWxic3hqbHVweWV3ZHFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5OTY0MDQsImV4cCI6MjA4OTU3MjQwNH0.fH-bV3QiQUbk_6L-clwwdHlZTnTIYAIJeKysMhUlBIs'; 
-		const GAS_URL = 'https://script.google.com/macros/s/AKfycbzoMjMSKa8CQOfNL7UmsVov1hOzbdY5gtUvtK9HKwXt9Pfe3QUMg_7MOgP5v4FTqng/exec';
+	// 1. إعدادات النظام
+const SUPABASE_URL = 'https://lzobdqlbsxjlupyewdqq.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6b2JkcWxic3hqbHVweWV3ZHFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5OTY0MDQsImV4cCI6MjA4OTU3MjQwNH0.fH-bV3QiQUbk_6L-clwwdHlZTnTIYAIJeKysMhUlBIs'; 
+
+// 👈 الرابط الجديد الخاص بك
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzoMjMSKa8CQOfNL7UmsVov1hOzbdY5gtUvtK9HKwXt9Pfe3QUMg_7MOgP5v4FTqng/exec';
 	
 		const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 		let currentUser = null;
@@ -218,25 +220,31 @@
 				const reader = new FileReader();
 				reader.onloadend = async () => {
 					try {
+						// تجهيز البيانات كنص عادي
+						const payload = JSON.stringify({ 
+							action: 'uploadImage', 
+							image: reader.result, 
+							filename: file.name, 
+							mimeType: file.type 
+						});
+
+						// إرسال الطلب بدون أي قيود (بدون Headers) لتجنب حظر المتصفح
 						const response = await fetch(GAS_URL, {
 							method: 'POST',
-                            redirect: 'follow', // 👈 إجبار المتصفح على تتبع مسار جوجل
-                            headers: {
-                                "Content-Type": "text/plain;charset=utf-8" // 👈 الخدعة السحرية لتجاوز حظر المتصفح (CORS)
-                            },
-							body: JSON.stringify({ 
-                                action: 'uploadImage', 
-                                image: reader.result, 
-                                filename: file.name, 
-                                mimeType: file.type 
-                            })
+							body: payload
 						});
+						
 						const result = await response.json();
-						if (result.success) resolve(result.url);
-						else reject(result.error || 'فشل رفع الصورة لسبب مجهول');
-					} catch (err) { reject('خطأ في الاتصال بسيرفر جوجل: ' + err.message); }
+						if (result.success) {
+							resolve(result.url);
+						} else {
+							reject(result.error || 'فشل رفع الصورة لسبب مجهول');
+						}
+					} catch (err) { 
+						reject('حظر أمني من المتصفح، تأكد من إعدادات النشر في جوجل (Anyone).'); 
+					}
 				};
-				reader.readAsDataURL(file); // تحويل الصورة لتشفير يقبله جوجل
+				reader.readAsDataURL(file); 
 			});
 		}
 	
