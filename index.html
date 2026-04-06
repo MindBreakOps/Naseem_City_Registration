@@ -130,8 +130,10 @@
 		</form>
 	</div>
 
-	<script>
-		// PWA Manifest Injector (لجعل التطبيق قابلاً للتثبيت على الهواتف)
+<script>
+		// ==========================================
+		// 1. إعدادات النظام
+		// ==========================================
 		(function initPWA() {
 			const manifest = {
 				name: "بوابة النسيم", short_name: "النسيم", start_url: ".", display: "standalone", background_color: "#F8FAFC", theme_color: "#0F172A",
@@ -140,27 +142,26 @@
 			const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'}); 
 			document.head.insertAdjacentHTML('beforeend', `<link rel="manifest" href="${URL.createObjectURL(blob)}">`);
 		})();
-
-		// 1. إعدادات النظام
+	
 		const SUPABASE_URL = 'https://lzobdqlbsxjlupyewdqq.supabase.co';
 		const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6b2JkcWxic3hqbHVweWV3ZHFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5OTY0MDQsImV4cCI6MjA4OTU3MjQwNH0.fH-bV3QiQUbk_6L-clwwdHlZTnTIYAIJeKysMhUlBIs'; 
 		const GAS_URL = 'https://script.google.com/macros/s/AKfycbzeR7L8dfzk7vtMNr6Zv_0VQP3n5-R3oWL79PQ0lT0aux4L6261yKPm8M4Jh9VE2DUm/exec';
-
+	
 		const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 		let currentUser = null;
-
+	
+		// ==========================================
 		// 2. إدارة الجلسات والدخول
+		// ==========================================
 		window.onload = async () => {
-			const authScreen = document.getElementById('auth-screen');
-			// التأكد من عدم وميض الشاشة قبل فحص حالة الدخول
 			const { data: { session } } = await supabaseClient.auth.getSession();
 			handleSession(session);
-
+	
 			supabaseClient.auth.onAuthStateChange((_event, session) => {
 				handleSession(session);
 			});
 		};
-
+	
 		async function handleSession(session) {
 			const authScreen = document.getElementById('auth-screen');
 			const appScreen = document.getElementById('app-screen');
@@ -175,7 +176,7 @@
 				if(currentUser.user_metadata.full_name && !document.getElementById('f_name').value) {
 					document.getElementById('f_name').value = currentUser.user_metadata.full_name;
 				}
-
+	
 				authScreen.classList.add('hidden');
 				appScreen.classList.remove('hidden');
 				
@@ -186,16 +187,18 @@
 				appScreen.classList.add('hidden');
 			}
 		}
-
+	
 		async function signInWithGoogle() {
 			await supabaseClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + window.location.pathname } });
 		}
-
+	
 		async function signOut() {
 			await supabaseClient.auth.signOut();
 		}
-
+	
+		// ==========================================
 		// 3. العمليات الأساسية (الصور وقاعدة البيانات)
+		// ==========================================
 		function previewImage(input) {
 			if (input.files && input.files[0]) {
 				const reader = new FileReader();
@@ -209,7 +212,7 @@
 				reader.readAsDataURL(input.files[0]);
 			}
 		}
-
+	
 		async function uploadImageToDrive(file) {
 			return new Promise((resolve, reject) => {
 				const reader = new FileReader();
@@ -221,15 +224,16 @@
 						});
 						const result = await response.json();
 						if (result.success) resolve(result.url);
-						else reject(result.error);
+						else reject(result.error || 'فشل رفع الصورة لسبب مجهول');
 					} catch (err) { reject(err); }
 				};
 				reader.readAsDataURL(file);
 			});
 		}
-
+	
 		async function checkExistingRecord() {
-			const { data, error } = await supabaseClient.from('naseem_residents').select('status').eq('created_by', currentUser.id).single();
+			// التعديل هنا: استخدام maybeSingle بدلاً من single لحل خطأ 406
+			const { data, error } = await supabaseClient.from('naseem_residents').select('status').eq('created_by', currentUser.id).maybeSingle();
 			if (data) {
 				document.getElementById('registration-form').classList.add('hidden');
 				const alertBox = document.getElementById('status-alert');
@@ -241,18 +245,20 @@
 				}
 			}
 		}
-
+	
 		async function submitCitizenData(e) {
 			e.preventDefault();
 			const btn = document.getElementById('btn-submit');
 			btn.innerHTML = '<div class="loader"></div>';
 			btn.disabled = true;
-
+	
 			try {
+				// 1. رفع الصورة إلى جوجل درايف
 				const file = document.getElementById('f_image').files[0];
 				let uploadedUrl = null;
 				if(file) uploadedUrl = await uploadImageToDrive(file);
-
+	
+				// 2. تجهيز البيانات
 				const payload = {
 					full_name: document.getElementById('f_name').value,
 					national_id: document.getElementById('f_nid').value,
@@ -266,16 +272,20 @@
 					status: 'pending', 
 					created_by: currentUser.id
 				};
-
+	
+				// 3. إرسال البيانات إلى Supabase
 				const { error } = await supabaseClient.from('naseem_residents').insert([payload]);
-				if (error) throw error;
-
+				if (error) throw error; // سيذهب هذا الخطأ إلى الـ catch أدناه
+	
+				// 4. نجاح العملية
 				document.getElementById('registration-form').classList.add('hidden');
 				document.getElementById('status-alert').classList.remove('hidden');
 				window.scrollTo({ top: 0, behavior: 'smooth' });
-
+	
 			} catch (error) {
-				alert('حدث خطأ أثناء إرسال البيانات، يرجى المحاولة مرة أخرى.\n' + error.message);
+				// استخراج رسالة الخطأ الحقيقية سواء كانت نصاً أو كائناً
+				let errorMsg = typeof error === 'string' ? error : (error.message || JSON.stringify(error));
+				alert('حدث خطأ أثناء الإرسال:\n' + errorMsg);
 			} finally {
 				btn.innerHTML = 'إرسال البيانات واعتماد الطلب';
 				btn.disabled = false;
