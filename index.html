@@ -248,36 +248,40 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbzoMjMSKa8CQOfNL7UmsVov
 			});
 		}
 
-		// 2. دالة الرفع المطورة
+		// 2. دالة الرفع المباشر إلى Supabase Storage (سريعة جداً ومقاومة للحظر)
 		async function uploadImageToDrive(file) {
 			return new Promise(async (resolve, reject) => {
 				try {
-					// خطوة الضغط أولاً
+					// 1. ضغط الصورة لتوفير المساحة والسرعة
 					const compressedBase64 = await compressImage(file);
 					
-					// تجهيز البيانات بعد الضغط
-					const payload = JSON.stringify({ 
-						action: 'uploadImage', 
-						image: compressedBase64, 
-						filename: "ID_" + Date.now() + ".jpg", 
-						mimeType: 'image/jpeg' 
-					});
-
-					// إرسال الطلب مع تحديد أنه نص عادي لمنع حظر المتصفح (CORS)
-					const response = await fetch(GAS_URL, {
-						method: 'POST',
-						body: payload,
-						headers: { "Content-Type": "text/plain;charset=utf-8" }
-					});
+					// 2. تحويل الصورة المضغوطة إلى ملف حقيقي (Blob)
+					const res = await fetch(compressedBase64);
+					const blob = await res.blob();
 					
-					const result = await response.json();
-					if (result.success) {
-						resolve(result.url);
-					} else {
-						reject(result.error || 'فشل رفع الصورة في سيرفر جوجل');
-					}
+					// 3. توليد اسم فريد للصورة
+					const fileName = `ID_${currentUser.id}_${Date.now()}.jpg`;
+
+					// 4. الرفع مباشرة إلى Supabase Storage (لن يعترض أي متصفح)
+					const { data, error } = await supabaseClient.storage
+						.from('citizen_ids')
+						.upload(fileName, blob, {
+							cacheControl: '3600',
+							upsert: false,
+							contentType: 'image/jpeg'
+						});
+
+					if (error) throw error;
+
+					// 5. الحصول على الرابط العام للصورة لحفظه في قاعدة البيانات
+					const { data: publicUrlData } = supabaseClient.storage
+						.from('citizen_ids')
+						.getPublicUrl(fileName);
+
+					resolve(publicUrlData.publicUrl); // هذا هو الرابط الذي سيراه الأدمن!
+
 				} catch (err) { 
-					reject('خطأ في الشبكة. تم حظر الاتصال، يرجى المحاولة باستخدام متصفح آخر مثل Chrome.'); 
+					reject('فشل رفع الصورة: ' + err.message); 
 				}
 			});
 		}
