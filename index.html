@@ -4,148 +4,178 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<title>بوابة المواطن | مدينة النسيم</title>
-	<meta name="theme-color" content="#10B981">
+	<meta name="theme-color" content="#0F172A">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	<script src="https://cdn.tailwindcss.com"></script>
 	<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 	<style>
-		body { font-family: 'Cairo', sans-serif; background-color: #F0FDF4; color: #1E293B; }
-		.glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid #E2E8F0; border-radius: 20px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); }
+		:root { --brand-primary: #DC2626; --brand-dark: #0F172A; }
+		body { font-family: 'Cairo', sans-serif; background-color: #F8FAFC; color: #334155; }
 		
-		/* تم تعديل حجم الخط لـ 16px لمنع التكبير التلقائي في الهواتف */
-		.form-input { width: 100%; padding: 12px 14px; border: 1.5px solid #CBD5E1; border-radius: 10px; outline: none; transition: all 0.3s; font-size: 16px; background: #F8FAFC; color: #1E293B; }
-		.form-input:focus { border-color: #10B981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); background: #fff; }
+		/* توحيد الهوية مع النظام الرئيسي */
+		.glass-card { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); border: 1px solid #E2E8F0; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
+		.form-input { width: 100%; padding: 12px 14px; border: 1.5px solid #E2E8F0; border-radius: 10px; outline: none; transition: all 0.3s; font-size: 16px; background: #F8FAFC; color: #0F172A; font-weight: 600;}
+		.form-input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1); background: #fff; }
 		.form-label { display: block; font-size: 13px; font-weight: 800; margin-bottom: 6px; color: #475569; }
-		.required::after { content: " *"; color: #EF4444; }
+		.required::after { content: " *"; color: var(--brand-primary); }
 		
-		/* إصلاح تنسيق الأزرار */
-		.btn-social { width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 15px; transition: all 0.3s; border: 1px solid #CBD5E1; background: white; color: #334155; cursor: pointer; }
-		.btn-social:hover { background: #F8FAFC; transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-color: #94A3B8; }
+		.btn-primary { background: linear-gradient(to left, #DC2626, #B91C1C); color: white; border-radius: 10px; font-weight: 800; padding: 14px 20px; transition: all 0.3s; box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.2); }
+		.btn-primary:hover { background: linear-gradient(to left, #B91C1C, #991B1B); transform: translateY(-2px); box-shadow: 0 6px 12px -2px rgba(220, 38, 38, 0.3); }
+		.btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+		.btn-google { width: 100%; display: flex; justify-content: center; align-items: center; gap: 12px; padding: 14px; border-radius: 10px; font-weight: 800; font-size: 15px; transition: all 0.3s; border: 2px solid #E2E8F0; background: white; color: #0F172A; cursor: pointer; }
+		.btn-google:hover { background: #F1F5F9; border-color: #CBD5E1; transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
 		
-		.loader { border: 3px solid #f3f3f3; border-top: 3px solid #10B981; border-radius: 50%; width: 22px; height: 22px; animation: spin 1s linear infinite; margin: 0 auto; }
+		.loader { border: 3px solid #f3f3f3; border-top: 3px solid white; border-radius: 50%; width: 22px; height: 22px; animation: spin 1s linear infinite; margin: 0 auto; }
 		@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 		
-		.file-upload-wrapper { position: relative; width: 100%; height: 120px; border: 2px dashed #94A3B8; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; background: #F8FAFC; overflow: hidden; }
-		.file-upload-wrapper:hover { border-color: #10B981; background: #ECFDF5; }
+		.file-upload-wrapper { position: relative; width: 100%; height: 130px; border: 2px dashed #CBD5E1; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; background: #F8FAFC; overflow: hidden; }
+		.file-upload-wrapper:hover { border-color: var(--brand-primary); background: #FEF2F2; }
 		.file-upload-input { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; z-index: 10; }
 	</style>
 </head>
-<body class="min-h-screen flex flex-col items-center p-4 md:p-6">
+<body class="min-h-screen flex flex-col items-center p-4 md:p-6 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSJub25lIj48Y2lyY2xlIGN4PSIyMDAiIGN5PSIyMDAiIHI9IjIwMCIgZmlsbD0icmdiYSgwLDAsMCwwLjAxKSIvPjwvc3ZnPg==')] bg-cover bg-fixed">
 
-	<div id="auth-screen" class="w-full max-w-sm mt-10 animate-in">
-		<div class="text-center mb-8">
-			<img src="https://raw.githubusercontent.com/MindBreakOps/LX-Permits/main/nas.png" alt="Logo" class="w-20 h-20 mx-auto object-contain mb-3 bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
-			<h1 class="text-2xl font-black text-slate-800">بوابة المواطن</h1>
-			<p class="text-xs text-emerald-600 font-bold mt-1 tracking-wide">لجنة خدمات النسيم السكنية</p>
+	<div id="auth-screen" class="w-full max-w-sm mt-8 md:mt-16 animate-in hidden">
+		<div class="text-center mb-6">
+			<div class="inline-block bg-white p-3 rounded-2xl shadow-sm border border-slate-200 mb-4 relative overflow-hidden">
+				<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 to-red-400"></div>
+				<img src="https://raw.githubusercontent.com/MindBreakOps/LX-Permits/main/nas.png" alt="Logo" class="w-20 h-20 object-contain mx-auto">
+			</div>
+			<h1 class="text-2xl font-black text-slate-800 tracking-wide">بوابة المواطن</h1>
+			<p class="text-xs text-red-600 font-bold mt-1 uppercase tracking-widest">مدينة النسيم السكنية</p>
 		</div>
 
-		<div class="glass-card p-6 space-y-4">
-			<p class="text-center text-xs text-slate-500 font-bold mb-5 leading-relaxed">سجل دخولك بشكل آمن لتسجيل بياناتك وطلب إثبات السكن</p>
+		<div class="glass-card p-6 md:p-8 relative overflow-hidden">
+			<div class="absolute top-0 left-0 w-full h-1 bg-slate-800"></div>
 			
-			<button onclick="signInWithGoogle()" class="btn-social">
-				<svg class="w-5 h-5" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 15.02 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-				Google المتابعة عبر
+			<h2 class="text-lg font-black text-slate-800 mb-2 text-center">أهلاً بك يا جارنا العزيز! 👋</h2>
+			<p class="text-center text-sm text-slate-500 font-bold mb-8 leading-relaxed">
+				تم إنشاء هذه البوابة لتسهيل تسجيل بياناتك بأمان وسرية تامة. بخطوة واحدة عبر حسابك في جوجل، يمكنك توثيق سكنك واستخراج شهاداتك.
+			</p>
+			
+			<button onclick="signInWithGoogle()" class="btn-google">
+				<svg class="w-6 h-6" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 15.02 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+				المتابعة باستخدام حساب Google
 			</button>
 			
-			<button onclick="signInWithFacebook()" class="btn-social hover:border-blue-300" style="color: #1877F2;">
-				<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-				Facebook المتابعة عبر
-			</button>
+			<div class="mt-6 flex items-center justify-center gap-2 text-[10px] font-bold text-slate-400">
+				<svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+				معلوماتك مشفرة ومحمية بالكامل
+			</div>
 		</div>
 	</div>
 
 	<div id="app-screen" class="w-full max-w-xl hidden animate-in pb-10">
+		
 		<header class="flex justify-between items-center bg-white p-3 px-4 rounded-xl shadow-sm border border-slate-200 mb-6 mt-4">
 			<div class="flex items-center gap-3">
-				<div class="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-sm border border-emerald-200" id="user-avatar">م</div>
+				<div class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-white font-bold text-sm shadow-inner" id="user-avatar">م</div>
 				<div>
 					<h2 class="font-black text-sm text-slate-800" id="user-name">اسم المواطن</h2>
 					<p class="text-[10px] text-slate-500 font-bold font-mono" id="user-email">email@example.com</p>
 				</div>
 			</div>
-			<button onclick="signOut()" class="text-xs bg-slate-50 text-slate-600 font-bold px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition">خروج</button>
+			<button onclick="signOut()" class="text-xs bg-slate-100 text-slate-600 font-bold px-4 py-2 rounded-lg border border-slate-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition">تسجيل الخروج</button>
 		</header>
 
-		<div id="status-alert" class="hidden bg-blue-50 border border-blue-200 p-4 rounded-xl mb-6 text-sm text-blue-800 font-bold text-center">
-			تم إرسال بياناتك بنجاح وهي الآن <span class="bg-blue-200 px-2 py-0.5 rounded text-blue-900">قيد المراجعة</span> من قبل اللجنة.
+		<div id="status-alert" class="hidden bg-blue-50 border border-blue-200 p-5 rounded-xl mb-6 text-sm text-blue-800 font-bold text-center leading-relaxed shadow-sm">
+			تم استلام بياناتك بنجاح! 🎉<br>
+			طلبك الآن <span class="bg-blue-200 px-2 py-0.5 rounded text-blue-900 mx-1 inline-block mt-2">قيد المراجعة</span> من قبل لجنة خدمات النسيم.
 		</div>
 
-		<form id="registration-form" onsubmit="submitCitizenData(event)" class="glass-card p-5 md:p-7 space-y-5">
-			<div class="border-b-2 border-emerald-100 pb-2 mb-4"><h3 class="font-black text-sm text-emerald-700">البيانات الأساسية</h3></div>
-			
-			<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-				<div><label class="form-label required">الاسم الرباعي</label><input type="text" id="f_name" class="form-input" required></div>
-				<div><label class="form-label required">الرقم الوطني</label><input type="number" id="f_nid" class="form-input font-mono tracking-wider" required></div>
-				<div><label class="form-label required">رقم الهاتف</label><input type="number" id="f_phone" class="form-input font-mono tracking-wider" required></div>
-				<div><label class="form-label required">المهنة</label><input type="text" id="f_prof" class="form-input" required></div>
+		<form id="registration-form" onsubmit="submitCitizenData(event)" class="glass-card p-5 md:p-8 space-y-6">
+			<div class="text-center mb-6">
+				<h3 class="font-black text-xl text-slate-800">استمارة الحصر السكني</h3>
+				<p class="text-xs text-slate-500 font-bold mt-1">الرجاء إدخال بياناتك بدقة لضمان حقوقك في الخدمات</p>
 			</div>
 
-			<div class="border-b-2 border-emerald-100 pb-2 mb-4 mt-6"><h3 class="font-black text-sm text-emerald-700">بيانات السكن</h3></div>
+			<div class="border-b-2 border-slate-100 pb-2 mb-4"><h4 class="font-black text-sm text-red-600 uppercase tracking-wider">البيانات الشخصية</h4></div>
 			
-			<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-				<div><label class="form-label required">المربع / المنطقة</label><select id="f_loc" class="form-input"><option value="شمال">شمال</option><option value="وسط">وسط</option><option value="جنوب">جنوب</option></select></div>
-				<div><label class="form-label required">رقم المنزل</label><input type="text" id="f_house_num" class="form-input font-mono" placeholder="مثال: 145/أ" required></div>
-				<div><label class="form-label">نوع السكن</label><select id="f_house" class="form-input"><option value="مالك">مالك</option><option value="مستأجر">مستأجر</option><option value="مؤقت">مؤقت (حارس منزل)</option></select></div>
-				<div><label class="form-label">عدد أفراد الأسرة</label><input type="number" id="f_fam" min="1" value="1" class="form-input font-mono"></div>
+			<div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+				<div><label class="form-label required">الاسم الرباعي</label><input type="text" id="f_name" class="form-input" placeholder="اسمك الكامل كما في البطاقة" required></div>
+				<div><label class="form-label required">الرقم الوطني</label><input type="number" id="f_nid" class="form-input font-mono tracking-wider" placeholder="11 رقم" required></div>
+				<div><label class="form-label required">رقم الهاتف النشط</label><input type="number" id="f_phone" class="form-input font-mono tracking-wider" placeholder="0900000000" required></div>
+				<div><label class="form-label required">المهنة الحالية</label><input type="text" id="f_prof" class="form-input" placeholder="طبيب، مهندس، أعمال حرة..." required></div>
 			</div>
 
-			<div class="mt-6">
-				<label class="form-label required">صورة إثبات السكن (فاتورة، أو عقد إيجار)</label>
+			<div class="border-b-2 border-slate-100 pb-2 mb-4 mt-8"><h4 class="font-black text-sm text-red-600 uppercase tracking-wider">البيانات السكنية</h4></div>
+			
+			<div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+				<div><label class="form-label required">المنطقة الجغرافية</label><select id="f_loc" class="form-input"><option value="شمال">النسيم - شمال</option><option value="وسط">النسيم - وسط</option><option value="جنوب">النسيم - جنوب</option></select></div>
+				<div><label class="form-label required">رقم المنزل / القطعة</label><input type="text" id="f_house_num" class="form-input font-mono" placeholder="مثال: 145/أ" required></div>
+				<div><label class="form-label required">صفة السكن</label><select id="f_house" class="form-input"><option value="مالك">مالك للمنزل</option><option value="مستأجر">مستأجر</option><option value="مؤقت">سكن مؤقت (حارس/ضيافة)</option></select></div>
+				<div><label class="form-label required">عدد أفراد الأسرة المقيمين</label><input type="number" id="f_fam" min="1" value="1" class="form-input font-mono" required></div>
+			</div>
+
+			<div class="mt-8 bg-slate-50 p-4 rounded-xl border border-slate-200">
+				<label class="form-label required mb-2 text-slate-800">مستند إثبات السكن (صورة)</label>
+				<p class="text-[11px] text-slate-500 font-bold mb-3">يرجى إرفاق صورة واضحة للبطاقة القومية، فاتورة كهرباء، أو عقد إيجار.</p>
 				<div class="file-upload-wrapper">
 					<input type="file" id="f_image" accept="image/*" class="file-upload-input" onchange="previewImage(this)" required>
 					<div id="upload-placeholder" class="text-center">
-						<svg class="w-7 h-7 mx-auto text-emerald-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-						<span class="text-xs font-bold text-slate-500">اضغط لرفع الصورة من الهاتف</span>
+						<svg class="w-8 h-8 mx-auto text-slate-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+						<span class="text-xs font-bold text-slate-600">اضغط لالتقاط أو اختيار صورة من هاتفك</span>
 					</div>
-					<img id="image-preview" class="hidden h-full w-full object-cover rounded-lg z-0 absolute opacity-50">
-					<div id="image-overlay-text" class="hidden absolute z-10 bg-slate-900/70 text-white text-xs px-3 py-1 rounded-full font-bold">تم اختيار الصورة ✔️</div>
+					<img id="image-preview" class="hidden h-full w-full object-cover rounded-lg z-0 absolute opacity-40">
+					<div id="image-overlay-text" class="hidden absolute z-10 bg-slate-900/80 text-emerald-400 text-xs px-4 py-2 rounded-full font-bold shadow-lg">✔️ تم اختيار الصورة بنجاح</div>
 				</div>
 			</div>
 
-			<button type="submit" id="btn-submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 rounded-xl shadow-lg transition mt-8 text-base">
-				إرسال البيانات للجنة
+			<button type="submit" id="btn-submit" class="w-full btn-primary mt-8 text-lg">
+				إرسال البيانات واعتماد الطلب
 			</button>
 		</form>
 	</div>
 
 	<script>
-		// ==========================================
-		// 1. إعدادات النظام (Configuration)
-		// ==========================================
+		// PWA Manifest Injector (لجعل التطبيق قابلاً للتثبيت على الهواتف)
+		(function initPWA() {
+			const manifest = {
+				name: "بوابة النسيم", short_name: "النسيم", start_url: ".", display: "standalone", background_color: "#F8FAFC", theme_color: "#0F172A",
+				icons: [{ src: "https://raw.githubusercontent.com/MindBreakOps/LX-Permits/main/nas.png", sizes: "192x192", type: "image/png" }]
+			};
+			const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'}); 
+			document.head.insertAdjacentHTML('beforeend', `<link rel="manifest" href="${URL.createObjectURL(blob)}">`);
+		})();
+
+		// 1. إعدادات النظام
 		const SUPABASE_URL = 'https://lzobdqlbsxjlupyewdqq.supabase.co';
 		const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6b2JkcWxic3hqbHVweWV3ZHFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5OTY0MDQsImV4cCI6MjA4OTU3MjQwNH0.fH-bV3QiQUbk_6L-clwwdHlZTnTIYAIJeKysMhUlBIs'; 
 		const GAS_URL = 'https://script.google.com/macros/s/AKfycbzeR7L8dfzk7vtMNr6Zv_0VQP3n5-R3oWL79PQ0lT0aux4L6261yKPm8M4Jh9VE2DUm/exec';
-	
-		// التعديل هنا: أسميناه supabaseClient لتجنب التعارض مع المتصفح
+
 		const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 		let currentUser = null;
-	
-		// ==========================================
-		// 2. إدارة الجلسات والدخول (Auth)
-		// ==========================================
+
+		// 2. إدارة الجلسات والدخول
 		window.onload = async () => {
+			const authScreen = document.getElementById('auth-screen');
+			// التأكد من عدم وميض الشاشة قبل فحص حالة الدخول
 			const { data: { session } } = await supabaseClient.auth.getSession();
 			handleSession(session);
-	
+
 			supabaseClient.auth.onAuthStateChange((_event, session) => {
 				handleSession(session);
 			});
 		};
-	
+
 		async function handleSession(session) {
 			const authScreen = document.getElementById('auth-screen');
 			const appScreen = document.getElementById('app-screen');
 			
 			if (session) {
 				currentUser = session.user;
-				document.getElementById('user-name').innerText = currentUser.user_metadata.full_name || 'مواطن';
+				const fullName = currentUser.user_metadata.full_name || 'مواطن كريم';
+				document.getElementById('user-name').innerText = fullName;
 				document.getElementById('user-email').innerText = currentUser.email;
-				document.getElementById('user-avatar').innerText = (currentUser.user_metadata.full_name || 'م').charAt(0);
+				document.getElementById('user-avatar').innerText = fullName.charAt(0);
 				
 				if(currentUser.user_metadata.full_name && !document.getElementById('f_name').value) {
 					document.getElementById('f_name').value = currentUser.user_metadata.full_name;
 				}
-	
+
 				authScreen.classList.add('hidden');
 				appScreen.classList.remove('hidden');
 				
@@ -156,22 +186,16 @@
 				appScreen.classList.add('hidden');
 			}
 		}
-	
+
 		async function signInWithGoogle() {
 			await supabaseClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + window.location.pathname } });
 		}
-	
-		async function signInWithFacebook() {
-			await supabaseClient.auth.signInWithOAuth({ provider: 'facebook', options: { redirectTo: window.location.origin + window.location.pathname } });
-		}
-	
+
 		async function signOut() {
 			await supabaseClient.auth.signOut();
 		}
-	
-		// ==========================================
+
 		// 3. العمليات الأساسية (الصور وقاعدة البيانات)
-		// ==========================================
 		function previewImage(input) {
 			if (input.files && input.files[0]) {
 				const reader = new FileReader();
@@ -185,7 +209,7 @@
 				reader.readAsDataURL(input.files[0]);
 			}
 		}
-	
+
 		async function uploadImageToDrive(file) {
 			return new Promise((resolve, reject) => {
 				const reader = new FileReader();
@@ -203,7 +227,7 @@
 				reader.readAsDataURL(file);
 			});
 		}
-	
+
 		async function checkExistingRecord() {
 			const { data, error } = await supabaseClient.from('naseem_residents').select('status').eq('created_by', currentUser.id).single();
 			if (data) {
@@ -212,23 +236,23 @@
 				alertBox.classList.remove('hidden');
 				
 				if(data.status === 'approved') {
-					alertBox.className = "bg-emerald-50 border border-emerald-200 p-4 rounded-xl mb-6 text-sm text-emerald-800 font-bold text-center";
-					alertBox.innerHTML = 'مرحباً بك! بياناتك <span class="bg-emerald-200 px-2 py-0.5 rounded text-emerald-900">معتمدة رسمياً</span> في السجل المدني للنسيم. يمكنك التوجه للجنة لاستخراج شهادتك.';
+					alertBox.className = "bg-emerald-50 border border-emerald-200 p-5 rounded-xl mb-6 text-sm text-emerald-800 font-bold text-center leading-relaxed shadow-sm";
+					alertBox.innerHTML = 'مرحباً بك مجدداً! ✨<br>بياناتك <span class="bg-emerald-200 px-2 py-0.5 rounded text-emerald-900 mx-1 inline-block mt-2">معتمدة رسمياً</span> في السجل المدني للنسيم. يمكنك التوجه للجنة لاستخراج شهاداتك.';
 				}
 			}
 		}
-	
+
 		async function submitCitizenData(e) {
 			e.preventDefault();
 			const btn = document.getElementById('btn-submit');
 			btn.innerHTML = '<div class="loader"></div>';
 			btn.disabled = true;
-	
+
 			try {
 				const file = document.getElementById('f_image').files[0];
 				let uploadedUrl = null;
 				if(file) uploadedUrl = await uploadImageToDrive(file);
-	
+
 				const payload = {
 					full_name: document.getElementById('f_name').value,
 					national_id: document.getElementById('f_nid').value,
@@ -242,17 +266,18 @@
 					status: 'pending', 
 					created_by: currentUser.id
 				};
-	
+
 				const { error } = await supabaseClient.from('naseem_residents').insert([payload]);
 				if (error) throw error;
-	
+
 				document.getElementById('registration-form').classList.add('hidden');
 				document.getElementById('status-alert').classList.remove('hidden');
-	
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+
 			} catch (error) {
-				alert('حدث خطأ أثناء الإرسال: ' + error.message);
+				alert('حدث خطأ أثناء إرسال البيانات، يرجى المحاولة مرة أخرى.\n' + error.message);
 			} finally {
-				btn.innerHTML = 'إرسال البيانات للجنة';
+				btn.innerHTML = 'إرسال البيانات واعتماد الطلب';
 				btn.disabled = false;
 			}
 		}
