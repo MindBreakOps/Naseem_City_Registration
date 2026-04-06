@@ -220,19 +220,23 @@
 					try {
 						const response = await fetch(GAS_URL, {
 							method: 'POST',
+                            redirect: 'follow', // 👈 إجبار المتصفح على تتبع مسار جوجل
+                            headers: {
+                                "Content-Type": "text/plain;charset=utf-8" // 👈 الخدعة السحرية لتجاوز حظر المتصفح (CORS)
+                            },
 							body: JSON.stringify({ 
-								action: 'uploadImage', // 👈 هذا هو السطر السحري الذي كان مفقوداً
-								image: reader.result, 
-								filename: file.name, 
-								mimeType: file.type 
-							})
+                                action: 'uploadImage', 
+                                image: reader.result, 
+                                filename: file.name, 
+                                mimeType: file.type 
+                            })
 						});
 						const result = await response.json();
 						if (result.success) resolve(result.url);
-						else reject(result.error);
-					} catch (err) { reject(err); }
+						else reject(result.error || 'فشل رفع الصورة لسبب مجهول');
+					} catch (err) { reject('خطأ في الاتصال بسيرفر جوجل: ' + err.message); }
 				};
-				reader.readAsDataURL(file);
+				reader.readAsDataURL(file); // تحويل الصورة لتشفير يقبله جوجل
 			});
 		}
 	
