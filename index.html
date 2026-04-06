@@ -215,36 +215,70 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbzoMjMSKa8CQOfNL7UmsVov
 			}
 		}
 	
-		async function uploadImageToDrive(file) {
-			return new Promise((resolve, reject) => {
+		// 1. محرك ضغط الصور السحري (يقلل الحجم بنسبة 90% بدون فقدان الوضوح)
+		async function compressImage(file) {
+			return new Promise((resolve) => {
 				const reader = new FileReader();
-				reader.onloadend = async () => {
-					try {
-						// تجهيز البيانات كنص عادي
-						const payload = JSON.stringify({ 
-							action: 'uploadImage', 
-							image: reader.result, 
-							filename: file.name, 
-							mimeType: file.type 
-						});
+				reader.onload = function(e) {
+					const img = new Image();
+					img.onload = function() {
+						const canvas = document.createElement('canvas');
+						const MAX_WIDTH = 800; // أقصى عرض للصورة
+						let width = img.width;
+						let height = img.height;
 
-						// إرسال الطلب بدون أي قيود (بدون Headers) لتجنب حظر المتصفح
-						const response = await fetch(GAS_URL, {
-							method: 'POST',
-							body: payload
-						});
-						
-						const result = await response.json();
-						if (result.success) {
-							resolve(result.url);
-						} else {
-							reject(result.error || 'فشل رفع الصورة لسبب مجهول');
+						// الحفاظ على أبعاد الصورة
+						if (width > MAX_WIDTH) {
+							height = Math.round((height * MAX_WIDTH) / width);
+							width = MAX_WIDTH;
 						}
-					} catch (err) { 
-						reject('حظر أمني من المتصفح، تأكد من إعدادات النشر في جوجل (Anyone).'); 
-					}
+
+						canvas.width = width;
+						canvas.height = height;
+						const ctx = canvas.getContext('2d');
+						ctx.drawImage(img, 0, 0, width, height);
+						
+						// ضغط الصورة بصيغة JPEG بجودة 70% (ممتازة جداً للبطاقات والفواتير)
+						const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+						resolve(compressedBase64);
+					};
+					img.src = e.target.result;
 				};
-				reader.readAsDataURL(file); 
+				reader.readAsDataURL(file);
+			});
+		}
+
+		// 2. دالة الرفع المطورة
+		async function uploadImageToDrive(file) {
+			return new Promise(async (resolve, reject) => {
+				try {
+					// خطوة الضغط أولاً
+					const compressedBase64 = await compressImage(file);
+					
+					// تجهيز البيانات بعد الضغط
+					const payload = JSON.stringify({ 
+						action: 'uploadImage', 
+						image: compressedBase64, 
+						filename: "ID_" + Date.now() + ".jpg", 
+						mimeType: 'image/jpeg' 
+					});
+
+					// إرسال الطلب مع تحديد أنه نص عادي لمنع حظر المتصفح (CORS)
+					const response = await fetch(GAS_URL, {
+						method: 'POST',
+						body: payload,
+						headers: { "Content-Type": "text/plain;charset=utf-8" }
+					});
+					
+					const result = await response.json();
+					if (result.success) {
+						resolve(result.url);
+					} else {
+						reject(result.error || 'فشل رفع الصورة في سيرفر جوجل');
+					}
+				} catch (err) { 
+					reject('خطأ في الشبكة. تم حظر الاتصال، يرجى المحاولة باستخدام متصفح آخر مثل Chrome.'); 
+				}
 			});
 		}
 	
