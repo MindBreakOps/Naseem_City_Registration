@@ -113,15 +113,18 @@
 			<div class="border-b-2 border-slate-200/60 pb-2 mb-4 mt-8"><h4 class="font-black text-sm text-red-600 uppercase tracking-wider">البيانات السكنية</h4></div>
 			
 			<div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-				<div><label class="form-label required">المنطقة الجغرافية</label><select id="f_loc" class="form-input"><option value="شمال">النسيم - شمال</option><option value="وسط">النسيم - وسط</option><option value="جنوب">النسيم - جنوب</option></select></div>
+				<div><label class="form-label required">الحالة الاجتماعية</label><select id="f_marital" class="form-input" required><option value="اعزب">أعزب / عزباء</option><option value="متزوج">متزوج / متزوجة</option><option value="ارملة">أرمل / أرملة</option><option value="مطلقة">مطلق / مطلقة</option></select></div>
+				<div><label class="form-label required">عدد العقارات بالنسيم</label><input type="number" id="f_owned_props" min="0" value="0" class="form-input font-mono" required></div>
+				
+				<div><label class="form-label required">المنطقة الجغرافية</label><select id="f_loc" class="form-input" required><option value="شمال">النسيم - شمال</option><option value="وسط">النسيم - وسط</option><option value="جنوب">النسيم - جنوب</option></select></div>
 				<div><label class="form-label required">رقم المنزل / القطعة</label><input type="text" id="f_house_num" class="form-input font-mono" placeholder="مثال: 145/أ" required></div>
-				<div><label class="form-label required">صفة السكن</label><select id="f_house" class="form-input"><option value="مالك">مالك للمنزل</option><option value="مستأجر">مستأجر</option><option value="مؤقت">سكن مؤقت (حارس/ضيافة)</option></select></div>
+				<div><label class="form-label required">صفة السكن</label><select id="f_house" class="form-input" required><option value="مالك">مالك للمنزل</option><option value="مستأجر">مستأجر</option><option value="مؤقت">سكن مؤقت (حارس/ضيافة)</option></select></div>
 				<div><label class="form-label required">عدد أفراد الأسرة المقيمين</label><input type="number" id="f_fam" min="1" value="1" class="form-input font-mono" required></div>
 			</div>
 
 			<div class="mt-8 bg-slate-50/80 backdrop-blur-sm p-4 rounded-xl border border-slate-200">
 				<label class="form-label required mb-2 text-slate-800">مستند إثبات السكن (صورة)</label>
-				<p class="text-[11px] text-slate-500 font-bold mb-3">يرجى إرفاق صورة واضحة للبطاقة القومية، فاتورة كهرباء، أو عقد إيجار.</p>
+				<p class="text-[11px] text-slate-500 font-bold mb-3">يرجى إرفاق صورة واضحة للبطاقة القومية، الجواز ء أو رخصة قيادة.</p>
 				<div class="file-upload-wrapper">
 					<input type="file" id="f_image" accept="image/*" class="file-upload-input" onchange="previewImage(this)" required>
 					<div id="upload-placeholder" class="text-center">
@@ -208,7 +211,7 @@
 			await supabaseClient.auth.signInWithOAuth({ 
 				provider: 'google', 
 				options: { 
-					// 👈 قمنا بتثبيت الرابط هنا لتجنب خطأ 404 في GitHub Pages
+					// 👈 تم التوجيه لرابط بوابة المواطن citizen.html
 					redirectTo: 'https://mindbreakops.github.io/Naseem_City_Registration/index.html' 
 				} 
 			});
@@ -316,6 +319,7 @@
 				let uploadedUrl = null;
 				if(file) uploadedUrl = await uploadImageToDrive(file);
 	
+				// 👇 تم إضافة الحقول الجديدة للـ Payload لتُرسل لقاعدة البيانات
 				const payload = {
 					full_name: document.getElementById('f_name').value,
 					national_id: document.getElementById('f_nid').value,
@@ -325,6 +329,8 @@
 					house_number: document.getElementById('f_house_num').value,
 					housing_type: document.getElementById('f_house').value,
 					family_members_count: parseInt(document.getElementById('f_fam').value),
+					marital_status: document.getElementById('f_marital').value,
+					owned_properties_count: parseInt(document.getElementById('f_owned_props').value) || 0,
 					id_image_url: uploadedUrl,
 					status: 'pending', 
 					created_by: currentUser.id
