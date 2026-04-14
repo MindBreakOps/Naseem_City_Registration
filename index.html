@@ -3,8 +3,8 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<title>بوابة المواطن | مدينة النسيم</title>
-	<meta name="theme-color" content="#0F172A">
+	<title>بوابة حصر السكان | مدينة النسيم</title>
+	<meta name="theme-color" content="#F8FAFC">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	<script src="https://cdn.tailwindcss.com"></script>
@@ -14,28 +14,55 @@
 		:root { --brand-primary: #DC2626; --brand-dark: #0F172A; }
 		body { font-family: 'Cairo', sans-serif; background-color: #F8FAFC; color: #334155; transition: background 0.5s ease; }
 		
-		/* 🗺️ كلاس الخريطة الذي سيتم تفعيله عند الدخول */
+		/* 🗺️ تم جعل الخريطة خلفية دائمة للنظام (تسجيل الدخول والاستمارة) */
 		body.map-bg {
-			background-image: linear-gradient(rgba(248, 250, 252, 0.75), rgba(248, 250, 252, 0.85)), url('https://raw.githubusercontent.com/MindBreakOps/LX-Permits/main/IMG_1104.jpg') !important;
+			background-image: linear-gradient(rgba(248, 250, 252, 0.85), rgba(248, 250, 252, 0.95)), url('https://raw.githubusercontent.com/MindBreakOps/LX-Permits/main/IMG_1104.jpg') !important;
 			background-size: cover !important;
 			background-position: center !important;
 			background-attachment: fixed !important;
 		}
 
-		/* تقليل الشفافية قليلاً ليظهر طيف الخريطة من خلف الاستمارة */
-		.glass-card { background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
+		/* تأثير شفافية خفيف يندمج مع الخريطة */
+		.login-wrapper {
+			background-image: radial-gradient(circle at top right, rgba(220, 38, 38, 0.03), transparent 40%), radial-gradient(circle at bottom left, rgba(15, 23, 42, 0.03), transparent 40%);
+			min-height: 100vh;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			padding: 16px;
+		}
+
+		.glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 20px; box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08); }
 		
-		.form-input { width: 100%; padding: 12px 14px; border: 1.5px solid #E2E8F0; border-radius: 10px; outline: none; transition: all 0.3s; font-size: 16px; background: rgba(248, 250, 252, 0.9); color: #0F172A; font-weight: 600;}
-		.form-input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1); background: #fff; }
-		.form-label { display: block; font-size: 13px; font-weight: 800; margin-bottom: 6px; color: #475569; }
+		.form-input { width: 100%; padding: 14px 16px; border: 1.5px solid #E2E8F0; border-radius: 12px; outline: none; transition: all 0.3s; font-size: 15px; background: #F8FAFC; color: #0F172A; font-weight: 600;}
+		.form-input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1); background: #fff; }
+		.form-label { display: block; font-size: 13px; font-weight: 800; margin-bottom: 8px; color: #475569; }
 		.required::after { content: " *"; color: var(--brand-primary); }
 		
-		.btn-primary { background: linear-gradient(to left, #DC2626, #B91C1C); color: white; border-radius: 10px; font-weight: 800; padding: 14px 20px; transition: all 0.3s; box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.2); }
-		.btn-primary:hover { background: linear-gradient(to left, #B91C1C, #991B1B); transform: translateY(-2px); box-shadow: 0 6px 12px -2px rgba(220, 38, 38, 0.3); }
+		.btn-primary { background: linear-gradient(to left, #DC2626, #B91C1C); color: white; border-radius: 12px; font-weight: 800; padding: 16px 20px; transition: all 0.3s; box-shadow: 0 4px 12px -2px rgba(220, 38, 38, 0.25); }
+		.btn-primary:hover { background: linear-gradient(to left, #B91C1C, #991B1B); transform: translateY(-2px); box-shadow: 0 8px 16px -4px rgba(220, 38, 38, 0.3); }
 		.btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
 
-		.btn-google { width: 100%; display: flex; justify-content: center; align-items: center; gap: 12px; padding: 14px; border-radius: 10px; font-weight: 800; font-size: 15px; transition: all 0.3s; border: 2px solid #E2E8F0; background: white; color: #0F172A; cursor: pointer; }
-		.btn-google:hover { background: #F1F5F9; border-color: #CBD5E1; transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+		/* التصميم العصري لزر Google */
+		.btn-google { 
+			width: 100%; 
+			display: flex; 
+			justify-content: center; 
+			align-items: center; 
+			gap: 12px; 
+			padding: 14px 16px; 
+			border-radius: 12px; 
+			font-weight: 800; 
+			font-size: 16px; 
+			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+			border: 1.5px solid #E2E8F0; 
+			background: #ffffff; 
+			color: #1E293B; 
+			cursor: pointer; 
+		}
+		.btn-google:hover { background: #F8FAFC; border-color: #CBD5E1; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
+		.btn-google:active { transform: translateY(0); background: #F1F5F9; }
 		
 		.loader { border: 3px solid #f3f3f3; border-top: 3px solid white; border-radius: 50%; width: 22px; height: 22px; animation: spin 1s linear infinite; margin: 0 auto; }
 		@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -43,43 +70,68 @@
 		.file-upload-wrapper { position: relative; width: 100%; height: 130px; border: 2px dashed #CBD5E1; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; background: rgba(248, 250, 252, 0.9); overflow: hidden; }
 		.file-upload-wrapper:hover { border-color: var(--brand-primary); background: rgba(254, 242, 242, 0.9); }
 		.file-upload-input { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; z-index: 10; }
+
+		/* تصميم الشعار المربع ذو الحواف الدائرية */
+		.logo-container {
+			width: 110px;
+			height: 110px;
+			background: white;
+			border-radius: 24px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+			margin: 0 auto 24px auto;
+			border: 1px solid #F1F5F9;
+			overflow: hidden;
+			position: relative;
+		}
+		.logo-container::before {
+			content: '';
+			position: absolute;
+			top: 0; left: 0; right: 0; height: 4px;
+			background: var(--brand-primary);
+		}
 	</style>
 </head>
-<body class="min-h-screen flex flex-col items-center p-4 md:p-6 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSJub25lIj48Y2lyY2xlIGN4PSIyMDAiIGN5PSIyMDAiIHI9IjIwMCIgZmlsbD0icmdiYSgwLDAsMCwwLjAxKSIvPjwvc3ZnPg==')] bg-cover bg-fixed">
+<body class="min-h-screen flex flex-col items-center map-bg">
 
-	<div id="auth-screen" class="w-full max-w-sm mt-8 md:mt-16 animate-in hidden">
-		<div class="text-center mb-6">
-			<div class="inline-block bg-white p-3 rounded-2xl shadow-sm border border-slate-200 mb-4 relative overflow-hidden">
-				<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 to-red-400"></div>
-				<img src="https://raw.githubusercontent.com/MindBreakOps/LX-Permits/main/nas.png" alt="Logo" class="w-20 h-20 object-contain mx-auto">
+	<div id="auth-screen" class="w-full login-wrapper animate-in">
+		<div class="w-full max-w-[400px]">
+			<div class="text-center mb-8">
+				<div class="logo-container">
+					<img src="https://raw.githubusercontent.com/MindBreakOps/LX-Permits/main/nas.png" alt="Logo" class="w-20 h-20 object-contain mx-auto mt-1">
+				</div>
+				<h1 class="text-[28px] font-black text-slate-800 tracking-tight leading-tight">بوابة حصر السكان</h1>
+				<p class="text-[14px] text-red-600 font-bold mt-1 tracking-wide">مدينة النسيم السكنية</p>
 			</div>
-			<h1 class="text-2xl font-black text-slate-800 tracking-wide">بوابة المواطن</h1>
-			<p class="text-xs text-red-600 font-bold mt-1 uppercase tracking-widest">مدينة النسيم السكنية</p>
-		</div>
 
-		<div class="glass-card p-6 md:p-8 relative overflow-hidden">
-			<div class="absolute top-0 left-0 w-full h-1 bg-slate-800"></div>
-			
-			<h2 class="text-lg font-black text-slate-800 mb-2 text-center">أهلاً بك يا جارنا العزيز! 👋</h2>
-			<p class="text-center text-sm text-slate-500 font-bold mb-8 leading-relaxed">
-				تم إنشاء هذه البوابة لتسهيل تسجيل بياناتك بأمان وسرية تامة. بخطوة واحدة عبر حسابك في جوجل، يمكنك توثيق سكنك واستخراج شهاداتك.
-			</p>
-			
-			<button onclick="signInWithGoogle()" class="btn-google">
-				<svg class="w-6 h-6" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 15.02 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-				المتابعة باستخدام حساب Google
-			</button>
-			
-			<div class="mt-6 flex items-center justify-center gap-2 text-[10px] font-bold text-slate-400">
-				<svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-				معلوماتك مشفرة ومحمية بالكامل
+			<div class="glass-card p-6 md:p-8 relative overflow-hidden">
+				<div class="absolute top-0 left-0 w-full h-1 bg-slate-800"></div>
+				
+				<div class="text-center mb-8">
+					<h2 class="text-xl font-black text-slate-800 mb-3">أهلاً بك يا جارنا العزيز! 👋</h2>
+					<p class="text-[13.5px] text-slate-500 font-bold leading-[1.8]">
+						تم إنشاء هذه البوابة لتسهيل تسجيل بياناتك بأمان وسرية تامة. بخطوة واحدة عبر حسابك في جوجل، يمكنك توثيق سكنك واستخراج شهاداتك.
+					</p>
+				</div>
+				
+				<button onclick="signInWithGoogle()" class="btn-google">
+					<span>المتابعة باستخدام حساب Google</span>
+					<svg class="w-[22px] h-[22px]" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 15.02 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+				</button>
+				
+				<div class="mt-8 flex items-center justify-center gap-2 text-[11px] font-bold text-slate-400">
+					<svg class="w-[14px] h-[14px] text-emerald-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+					معلوماتك مشفرة ومحمية بالكامل
+				</div>
 			</div>
 		</div>
 	</div>
 
-	<div id="app-screen" class="w-full max-w-xl hidden animate-in pb-10">
+	<div id="app-screen" class="w-full max-w-xl hidden animate-in pb-10 p-4 md:p-6 mx-auto">
 		
-		<header class="flex justify-between items-center bg-white/90 backdrop-blur-md p-3 px-4 rounded-xl shadow-sm border border-slate-200 mb-6 mt-4">
+		<header class="flex justify-between items-center bg-white/90 backdrop-blur-md p-3 px-4 rounded-xl shadow-sm border border-slate-200 mb-6 mt-2">
 			<div class="flex items-center gap-3">
 				<div class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-white font-bold text-sm shadow-inner" id="user-avatar">م</div>
 				<div>
@@ -87,7 +139,7 @@
 					<p class="text-[10px] text-slate-500 font-bold font-mono" id="user-email">email@example.com</p>
 				</div>
 			</div>
-			<button onclick="signOut()" class="text-xs bg-slate-100/80 text-slate-600 font-bold px-4 py-2 rounded-lg border border-slate-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition">تسجيل الخروج</button>
+			<button onclick="signOut()" class="text-xs bg-slate-100 text-slate-600 font-bold px-4 py-2.5 rounded-lg border border-slate-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition">تسجيل الخروج</button>
 		</header>
 
 		<div id="status-alert" class="hidden bg-blue-50/95 backdrop-blur-sm border border-blue-200 p-5 rounded-xl mb-6 text-sm text-blue-800 font-bold text-center leading-relaxed shadow-sm">
@@ -96,43 +148,43 @@
 		</div>
 
 		<form id="registration-form" onsubmit="submitCitizenData(event)" class="glass-card p-5 md:p-8 space-y-6">
-			<div class="text-center mb-6">
-				<h3 class="font-black text-xl text-slate-800">استمارة الحصر السكني</h3>
-				<p class="text-xs text-slate-500 font-bold mt-1">الرجاء إدخال بياناتك بدقة لضمان حقوقك في الخدمات</p>
+			<div class="text-center mb-8">
+				<h3 class="font-black text-[22px] text-slate-800">استمارة الحصر السكني</h3>
+				<p class="text-[12px] text-slate-500 font-bold mt-1.5">الرجاء إدخال بياناتك بدقة لضمان حقوقك في الخدمات</p>
 			</div>
 
-			<div class="border-b-2 border-slate-200/60 pb-2 mb-4"><h4 class="font-black text-sm text-red-600 uppercase tracking-wider">البيانات الشخصية</h4></div>
+			<div class="border-b-2 border-slate-100 pb-2 mb-4"><h4 class="font-black text-[13px] text-red-600 uppercase tracking-wider">البيانات الشخصية</h4></div>
 			
 			<div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
 				<div><label class="form-label required">الاسم الرباعي</label><input type="text" id="f_name" class="form-input" placeholder="اسمك الكامل كما في البطاقة" required></div>
 				<div><label class="form-label required">الرقم الوطني</label><input type="number" id="f_nid" class="form-input font-mono tracking-wider" placeholder="11 رقم" required></div>
 				<div><label class="form-label required">رقم الهاتف النشط</label><input type="number" id="f_phone" class="form-input font-mono tracking-wider" placeholder="0900000000" required></div>
-				<div><label class="form-label required">المهنة الحالية</label><input type="text" id="f_prof" class="form-input" placeholder="طبيب، مهندس، أعمال حرة..." required></div>
+				<div><label class="form-label">المهنة الحالية (اختياري)</label><input type="text" id="f_prof" class="form-input" placeholder="طبيب، مهندس، أعمال حرة..."></div>
 			</div>
 
-			<div class="border-b-2 border-slate-200/60 pb-2 mb-4 mt-8"><h4 class="font-black text-sm text-red-600 uppercase tracking-wider">البيانات السكنية</h4></div>
+			<div class="border-b-2 border-slate-100 pb-2 mb-4 mt-8"><h4 class="font-black text-[13px] text-red-600 uppercase tracking-wider">البيانات السكنية</h4></div>
 			
 			<div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
 				<div><label class="form-label required">الحالة الاجتماعية</label><select id="f_marital" class="form-input" required><option value="اعزب">أعزب / عزباء</option><option value="متزوج">متزوج / متزوجة</option><option value="ارملة">أرمل / أرملة</option><option value="مطلقة">مطلق / مطلقة</option></select></div>
 				<div><label class="form-label required">عدد العقارات بالنسيم</label><input type="number" id="f_owned_props" min="0" value="0" class="form-input font-mono" required></div>
 				
 				<div><label class="form-label required">المنطقة الجغرافية</label><select id="f_loc" class="form-input" required><option value="شمال">النسيم - شمال</option><option value="وسط">النسيم - وسط</option><option value="جنوب">النسيم - جنوب</option></select></div>
-				<div><label class="form-label required">رقم المنزل / القطعة</label><input type="text" id="f_house_num" class="form-input font-mono" placeholder="مثال: 145/أ" required></div>
+				<div><label class="form-label required">رقم القطعة</label><input type="text" id="f_house_num" class="form-input font-mono tracking-wider" placeholder="مثال: 145" required></div>
 				<div><label class="form-label required">صفة السكن</label><select id="f_house" class="form-input" required><option value="مالك">مالك للمنزل</option><option value="مستأجر">مستأجر</option><option value="مؤقت">سكن مؤقت (حارس/ضيافة)</option></select></div>
 				<div><label class="form-label required">عدد أفراد الأسرة المقيمين</label><input type="number" id="f_fam" min="1" value="1" class="form-input font-mono" required></div>
 			</div>
 
-			<div class="mt-8 bg-slate-50/80 backdrop-blur-sm p-4 rounded-xl border border-slate-200">
+			<div class="mt-8 bg-slate-50/80 backdrop-blur-sm p-4 md:p-5 rounded-xl border border-slate-200">
 				<label class="form-label required mb-2 text-slate-800">مستند إثبات السكن (صورة)</label>
-				<p class="text-[11px] text-slate-500 font-bold mb-3">يرجى إرفاق صورة واضحة للبطاقة القومية، الجواز ء أو رخصة قيادة.</p>
+				<p class="text-[11.5px] text-slate-500 font-bold mb-4">يرجى إرفاق صورة واضحة للبطاقة القومية، الجواز، أو رخصة قيادة.</p>
 				<div class="file-upload-wrapper">
 					<input type="file" id="f_image" accept="image/*" class="file-upload-input" onchange="previewImage(this)" required>
 					<div id="upload-placeholder" class="text-center">
-						<svg class="w-8 h-8 mx-auto text-slate-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-						<span class="text-xs font-bold text-slate-600">اضغط لالتقاط أو اختيار صورة من هاتفك</span>
+						<svg class="w-8 h-8 mx-auto text-slate-400 mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+						<span class="text-[12px] font-bold text-slate-600">اضغط لالتقاط أو اختيار صورة من هاتفك</span>
 					</div>
-					<img id="image-preview" class="hidden h-full w-full object-cover rounded-lg z-0 absolute opacity-40">
-					<div id="image-overlay-text" class="hidden absolute z-10 bg-slate-900/80 text-emerald-400 text-xs px-4 py-2 rounded-full font-bold shadow-lg">✔️ تم اختيار الصورة بنجاح</div>
+					<img id="image-preview" class="hidden h-full w-full object-cover rounded-lg z-0 absolute opacity-30 mix-blend-multiply">
+					<div id="image-overlay-text" class="hidden absolute z-10 bg-slate-900/90 text-emerald-400 text-xs px-4 py-2 rounded-full font-bold shadow-lg">✔️ تم إرفاق المستند</div>
 				</div>
 			</div>
 
@@ -193,17 +245,11 @@
 				authScreen.classList.add('hidden');
 				appScreen.classList.remove('hidden');
 				
-				// 🗺️ إظهار خريطة المخطط كخلفية عند نجاح الدخول
-				document.body.classList.add('map-bg');
-				
 				checkExistingRecord();
 			} else {
 				currentUser = null;
 				authScreen.classList.remove('hidden');
 				appScreen.classList.add('hidden');
-				
-				// 🗺️ إزالة الخريطة والعودة للخلفية البيضاء في شاشة تسجيل الدخول
-				document.body.classList.remove('map-bg');
 			}
 		}
 	
@@ -211,10 +257,13 @@
 			await supabaseClient.auth.signInWithOAuth({ 
 				provider: 'google', 
 				options: { 
-					// 👈 تم التوجيه لرابط بوابة المواطن citizen.html
 					redirectTo: 'https://mindbreakops.github.io/Naseem_City_Registration/index.html' 
 				} 
 			});
+		}
+
+		async function signOut() {
+			await supabaseClient.auth.signOut();
 		}
 	
 		// ==========================================
@@ -319,7 +368,6 @@
 				let uploadedUrl = null;
 				if(file) uploadedUrl = await uploadImageToDrive(file);
 	
-				// 👇 تم إضافة الحقول الجديدة للـ Payload لتُرسل لقاعدة البيانات
 				const payload = {
 					full_name: document.getElementById('f_name').value,
 					national_id: document.getElementById('f_nid').value,
