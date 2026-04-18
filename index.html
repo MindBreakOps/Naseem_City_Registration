@@ -207,10 +207,17 @@
 			document.head.insertAdjacentHTML('beforeend', `<link rel="manifest" href="${URL.createObjectURL(blob)}">`);
 		})();
 
-		const SUPABASE_URL = 'https://lzobdqlbsxjlupyewdqq.supabase.co';
-		const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6b2JkcWxic3hqbHVweWV3ZHFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5OTY0MDQsImV4cCI6MjA4OTU3MjQwNH0.fH-bV3QiQUbk_6L-clwwdHlZTnTIYAIJeKysMhUlBIs'; 
-
-		const GAS_URL = 'https://script.google.com/macros/s/AKfycbzoMjMSKa8CQOfNL7UmsVov1hOzbdY5gtUvtK9HKwXt9Pfe3QUMg_7MOgP5v4FTqng/exec';
+		// 1. الرابط الأساسي فقط (بدون أي إضافات في النهاية)
+		const SUPABASE_URL = 'https://qeamepjbrixhwgzmhwvw.supabase.co'; 
+		
+		// 2. المفتاح الخاص بك
+		const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlYW1lcGpicml4aHdnem1od3Z3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1MDQwNDIsImV4cCI6MjA5MjA4MDA0Mn0.rr-Jp_YoJxjEztZ5vqU36nem_Pedg7cc2J8XL74SdYg';
+		
+		// 3. تأكد أن سطر تشغيل المكتبة موجود ويبدو هكذا:
+		
+		
+		
+		const GAS_URL = 'https://script.google.com/macros/s/AKfycbw3M0pH4dXIegs0QcjVkYWs9j6VnoutiUPRSxrV57_o1Fxvl0Ri5icqKbxJQrVw148Q/exec';
 	
 		const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 		let currentUser = null;
@@ -245,11 +252,17 @@
 				authScreen.classList.add('hidden');
 				appScreen.classList.remove('hidden');
 				
+				// 🗺️ إظهار خريطة المخطط كخلفية عند نجاح الدخول
+				document.body.classList.add('map-bg');
+				
 				checkExistingRecord();
 			} else {
 				currentUser = null;
 				authScreen.classList.remove('hidden');
 				appScreen.classList.add('hidden');
+				
+				// 🗺️ إزالة الخريطة والعودة للخلفية البيضاء في شاشة تسجيل الدخول
+				document.body.classList.remove('map-bg');
 			}
 		}
 	
@@ -257,13 +270,10 @@
 			await supabaseClient.auth.signInWithOAuth({ 
 				provider: 'google', 
 				options: { 
+					// 👈 تم التوجيه لرابط بوابة المواطن citizen.html
 					redirectTo: 'https://mindbreakops.github.io/Naseem_City_Registration/index.html' 
 				} 
 			});
-		}
-
-		async function signOut() {
-			await supabaseClient.auth.signOut();
 		}
 	
 		// ==========================================
@@ -368,6 +378,7 @@
 				let uploadedUrl = null;
 				if(file) uploadedUrl = await uploadImageToDrive(file);
 	
+				// 👇 تم إضافة الحقول الجديدة للـ Payload لتُرسل لقاعدة البيانات
 				const payload = {
 					full_name: document.getElementById('f_name').value,
 					national_id: document.getElementById('f_nid').value,
