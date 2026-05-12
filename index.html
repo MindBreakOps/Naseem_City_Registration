@@ -265,12 +265,12 @@
 			}
 		}
 	
-		async function signInWithGoogle() {
+	async function signInWithGoogle() {
 	await supabaseClient.auth.signInWithOAuth({ 
 		provider: 'google', 
 		options: { 
-			// This automatically grabs your exact current URL, whether you are on localhost, a file:// path, or GitHub!
-			redirectTo: window.location.origin + window.location.pathname 
+			// Hardcoded to your exact domain and folder
+			redirectTo: 'https://www.aljmaan.dpdns.org/Naseem_City_Registration/' 
 		} 
 	});
 }
