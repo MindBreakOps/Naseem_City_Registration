@@ -266,14 +266,14 @@
 		}
 	
 		async function signInWithGoogle() {
-			await supabaseClient.auth.signInWithOAuth({ 
-				provider: 'google', 
-				options: { 
-					redirectTo: window.location.origin + window.location.pathname 
-				} 
-			});
-		}
-	
+	await supabaseClient.auth.signInWithOAuth({ 
+		provider: 'google', 
+		options: { 
+			// This automatically grabs your exact current URL, whether you are on localhost, a file:// path, or GitHub!
+			redirectTo: window.location.origin + window.location.pathname 
+		} 
+	});
+}
 		async function signOut() {
 			await supabaseClient.auth.signOut();
 			location.reload();
